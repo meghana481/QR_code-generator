@@ -1,0 +1,48 @@
+import streamlit as st
+import qrcode
+from io import BytesIO
+import base64
+
+# Function to generate QR code
+def generate_qr(text):
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(text)  # Changed 'Some data' to 'text'
+    qr.make(fit=True)
+
+    img = qr.make_image(fill_color="black", back_color="white")
+    
+    # Convert PIL Image to bytes
+    buffered = BytesIO()
+    img.save(buffered, format="PNG")
+    img_byte_array = buffered.getvalue()
+    
+    return img_byte_array
+
+# Streamlit app
+st.title("🎈 QR Code Generator 🎈")
+
+# Input URL
+url = st.text_input("Enter URL:", placeholder="https://example.com")
+
+if url:
+        # Generate QR code
+        qr_img = generate_qr(url)
+    
+        # Display QR code using base64 encoded image
+        #NOTE: st.markdown is used to add custom CSS
+        st.markdown(
+            f"""
+            <div style="display: flex; justify-content: center;">
+                <img src="data:image/png;base64,{base64.b64encode(qr_img).decode()}" style="width: 250px; height: 250px;">
+            </div>
+            """,
+            unsafe_allow_html=True
+        )    
+    
+        # Celebrate with balloons!
+        st.balloons()
